@@ -1,0 +1,28 @@
+baseURL = 'https://example.org/'
+languageCode = 'en-us'
+title = 'Ret2skillz Vault'
+theme = 'PaperMod'
+
+[params]
+  description = 'Cybersecurity writeups and CTF challenges'
+  author = 'Ret2skillz'
+
+[[menu.main]]
+  name = 'Writeups'
+  url = '/writeups/'
+  weight = 1
+
+[[menu.main]]
+  name = 'Articles'
+  url = '/articles/'
+  weight = 2
+
+[[menu.main]]
+  name = 'Posts'
+  url = '/posts/'
+  weight = 3
+
+[[menu.main]]
+  name = 'About'
+  url = '/about/'
+  weight = 4
