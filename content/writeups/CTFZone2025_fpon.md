@@ -1,6 +1,8 @@
 +++
 title = 'CTFZone2025 Fpon'
 date = 2025-10-25T19:22:34+02:00
+tags = ["pwn", "FSOP", "CTFZone"]
+categories = ["CTF"]
 +++
 
 This year, I managed to solve my first challenge from a big CTF. The challenge was fpon and involved manipulating FSOP for RCE.
