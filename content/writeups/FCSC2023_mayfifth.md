@@ -1,7 +1,6 @@
 +++
 title = 'FCSC2023 May The Fifth'
 date = 2025-10-26T17:30:23+01:00
-draft = true
 +++
 
 Recently, I started training myself on [hackropole](https://hackropole.fr/fr/), the ANSSI platform that has all the challenges from the past FCSC competitions. So I thought I'd make some writeups for some challenges, here is the writeup for May the Fifth.
