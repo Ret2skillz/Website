@@ -7,7 +7,7 @@ categories = ["CTF"]
 
 This year, I solved my first challenge from a big CTF. The challenge was fpon and involved manipulating FSOP for RCE.
 
-For this challenge a [Dockerfile](https://github.com/Ret2skillz/CTFs/blob/main/CTFZone2025/fpon/Dockerfile) and the [binary](https://github.com/Ret2skillz/CTFs/blob/main/CTFZone2025/fpon/fpon)
+For this challenge a [Dockerfile](https://github.com/Ret2skillz/CTFs/blob/main/CTFZone2025/fpon/Dockerfile) and the [binary](https://github.com/Ret2skillz/CTFs/blob/main/CTFZone2025/fpon/fpon) were provided.
 
 I first extracted the ld and libc from the Docker and used pwninit to have a fpon_patched running with the correct ld and libc, as exploits can work differently if not using the correct version.
 
