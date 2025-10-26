@@ -5,7 +5,7 @@ tags = ["pwn", "FSOP", "CTFZone"]
 categories = ["CTF"]
 +++
 
-This year, I managed to solve my first challenge from a big CTF. The challenge was fpon and involved manipulating FSOP for RCE.
+This year, I solved my first challenge from a big CTF. The challenge was fpon and involved manipulating FSOP for RCE.
 
 For this challenge a [Dockerfile](https://github.com/Ret2skillz/CTFs/blob/main/CTFZone2025/fpon/Dockerfile) and the [binary](https://github.com/Ret2skillz/CTFs/blob/main/CTFZone2025/fpon/fpon)
 
@@ -21,6 +21,13 @@ Now that we are all setup we can look at the challenge.
 - Overwrite stdout with a fake stdout that will lead to system(/bin/sh)
 
 # Fpon #
+Before anything let's see the result of checksec on the binary.
+
+![checksec](/images/checksec_fpon.png)
+
+We can see that all protections are enabled but there is Partial RELRO so we might be able to overwrite the got (it actually didn't matter for the exploit).
+
+The code wasn't provided with the challenge so we had to reverse it. Below is the pseudocode of main function.
 ```C
 int __fastcall main(int argc, const char **argv, const char **envp)
 {
@@ -47,7 +54,7 @@ int __fastcall main(int argc, const char **argv, const char **envp)
   return 0;
 }
 ```
-The code is fairly simple, it asks twice for an offset to write a byte to. Then it allows us to send up to 0x1000 size data to any address of our chosing.
+The code is fairly simple, it asks twice for an offset to write a byte to. Then it allows us to send up to 0x1000 size data to any address of our choosing.
 It then puts "That's all" and return 0.
 
 So the challenge gives us an arbitrary write to any address, but since ASLR and PIE are activated there is no way to use that without a leak.
@@ -56,12 +63,16 @@ What's important is that the offset we can write to are directly into stdout...b
 
 You should read [this article](https://github.com/nobodyisnobody/docs/tree/main/using.stdout.as.a.read.primitive/) if you want more details about how to leak with stdout structure and the stdout structure in general as the leak strategy is based on it.
 
-To make it simple, in this challenge we can leak a libc address with stdout by modifying the write_base address to make it smaller than the write_ptr and write_end and modifying the flags to 0xfbad1887.
+To summarise it shortly, stdout has a structure with different variables : flags that handle its behavior, read and write pointer, base and end values that indicate the buffers for reading and writing of stdout. If we can modify the base of write and the flags we can manage to have stdout leak the values between the new write_base and the write_end. So we can simply make write_base point to an address that contains a libc address to leak it. (In this case the address leaked is of stdin).
+
+An important part is that first we need to modify the flags value from 0xfbad2887 to 0xfbad1887. 
+
+Changing this value clear the _IO_IS_APPENDING flag, meaning stdout will respect our new write_base and use our manipulated pointer for its flush operations, effectively leaking what we want.
 
 So the strategy to gain a leak is fairly simple : 
 - Write first byte 0x18 at offset 1 to change flags from 0xfbad2887 to 0xfbad1887
 - Write second byte 0x28 at offset 32 to modify LSB of write_base
-- We'll get a leak on stdout
+- Get a libc leak on stdout
 
 The below code achieves this strategy
 ```python
@@ -102,7 +113,7 @@ fake._codecvt= stdout + 0xb8
 fake._wide_data = stdout+0x200          # _wide_data just need to points to empty zone
 fake.unknown2=p64(0)*2+p64(stdout+0x20)+p64(0)*3+p64(fake_vtable)
 ```
-When puts get execute, it will use stdout which will then trigger a bunch of libc functions (you can see it by stepping into puts and following the functions in gdb), which will ultimately IO_save_base, when it calls save_base rcx will point to _IO_read_end and rdi will point to _IO_write_end - 0x10.
+When puts get executed, it will use stdout which will then trigger a bunch of libc functions (you can see it by stepping into puts and following the functions in gdb), which will ultimately IO_save_base, when it calls save_base rcx will point to _IO_read_end and rdi will point to _IO_write_end - 0x10.
 
 So we can put /bin/sh string at _IO_write_end, system at read_end and a gadget doing a simple add rdi, 0x10 ; jmp rcx at save_base.
 
@@ -111,6 +122,6 @@ When save_base get called it will make rdi point to bin/sh and then jump to syst
 Full exploit code available [Here](https://github.com/Ret2skillz/CTFs/blob/main/CTFZone2025/fpon/exploit.py)
 
 ## Conclusion ##
-Fpon was my first challenge solved from a big CTF so it was a major achievement solving it! While it was not my first time using FSOP it was my first time using RCE with a crafted stdout, and it's always nice to learn a new trick.
+Fpon was my first challenge solved from a big CTF so it was a major achievement solving it! While it was not my first time using FSOP it was my first time using RCE with a crafted stdout, so it's always nice to learn a new trick.
 
 
