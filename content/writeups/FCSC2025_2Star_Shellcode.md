@@ -91,7 +91,7 @@ Overall this challenge was easy if you have some experience with shellcode chall
 
 Small Primes Shellcode was the second shellcode challenge from FCSC 2025. For this one the constraints are much worse. The program will take our shellcode, and for every 4 bytes it will assess if the number is prime or not. This means that we need to send only prime instructions for the shellcode. Also, the challenge is ARM64.
 
-The provided files are the [binary](https://github.com/Ret2skillz/CTFs/blob/main/FCSC2025/SmallPrimesShellcode/small-primes-shellcode), [docker-compose.yml](https://github.com/Ret2skillz/CTFs/blob/main/FCSC2025/SmallPrimesShellcode/). In the repo you can also find a patched version of the binary and needed libraries to launch it with pwntools and debugging it more easily.
+The provided files are the [binary](https://github.com/Ret2skillz/CTFs/blob/main/FCSC2025/SmallPrimesShellcode/small-primes-shellcode), [docker-compose.yml](https://github.com/Ret2skillz/CTFs/blob/main/FCSC2025/SmallPrimesShellcode/docker-compose.yml). In the repo you can also find a patched version of the binary and needed libraries to launch it with pwntools and debugging it more easily.
 
 So back to the challenge now. The first thing I did was...bruteforcing all the major possible instructions in ARM64 that give prime numbers. I had Claude make me this [script](https://github.com/Ret2skillz/CTFs/blob/main/FCSC2025/SmallPrimesShellcode/check_prime.py) and then expanded myself the instructions to test.
 
