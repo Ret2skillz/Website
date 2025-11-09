@@ -82,7 +82,7 @@ r.sendline(b'\x90'*200 + shell) #pad with a nopslide and send shellcode
 
 r.interactive()
 ```
-Overall this challenge was easy if you have some experience with shellcode challenges and tricks. I guess it would take longer to solve if you are not familiar with it. Here for the full [exploit](https://github.com/Ret2skillz/CTFs/blob/main/FCSC2025/Bigorneau/exploit)
+Overall this challenge was easy if you have some experience with shellcode challenges and tricks. I guess it would take longer to solve if you are not familiar with it. Here for the full [exploit](https://github.com/Ret2skillz/CTFs/blob/main/FCSC2025/Bigorneau/exploit.py)
 
 ## Small Primes Shellcode
 ![small-primes-shellcode](/images/small-primes-shellcode.png)
@@ -165,7 +165,7 @@ svc #19 ; syscall
 Here is the full [exploit](https://github.com/Ret2skillz/CTFs/blob/main/FCSC2025/SmallPrimesShellcode/exploit.py)
 
 ## Conclusion
-Overall those challenges helped me get back to training shellcode. The challenges overall were not really hard, but the constraint of prime numbers was quite interesting. Overall, it felt nice to be able to solve both of them in less than 5h in total.
+Overall those challenges helped me get back to training shellcode. The challenges were not really hard, but the constraint of prime numbers was quite interesting and something I didn't saw before. It felt nice tho to be able to solve both of them in less than 5h in total.
 
 
 
