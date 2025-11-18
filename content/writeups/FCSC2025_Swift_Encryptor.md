@@ -439,7 +439,7 @@ And finally after sending it we get our shell. Note: the exploit is not so stabl
 
 ![shell](/images/swiftencryptor_shell.png)
 
-You can find the full [exploit](https://github.com/Ret2skillz/CTFs/blob/main/FCSC2025/SwiftEncryptor/exploit.py)
+You can find the full **[exploit](https://github.com/Ret2skillz/CTFs/blob/main/FCSC2025/SwiftEncryptor/exploit.py)**
 
 ## Conclusion
 While the writeup may seem like the exploitation is quite simple, it was definitly not while doing the challenge. Understanding precisely the integer overflow and offset manipulation was crucial for my exploitation and involved a lot of code reading and debugging, and it took me around a day to solve this challenge. Once I understood it the exploit felt more "classical". Overall I really liked the challenge, it forced me to understand a lot of code, and the exploit felt really targeted to exploiting the defaults in a program, rather than using CTF tricks.
