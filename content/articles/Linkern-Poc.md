@@ -1,6 +1,6 @@
 +++
 title = 'Linux Kernel PoC (CVE-2025-39946)'
-date = 2025-11-17T12:51:42+01:00
+date = 2026-02-14T12:51:42+01:00
 tags = ["pwn", "exploit", "CVE", "PoC", "Kernel"]
 categories = ["Exploit"]
 +++
