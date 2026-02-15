@@ -1,6 +1,6 @@
 +++
 title = '0XFUN CTF 67 Revenge'
-date = 2025-10-25T19:22:34+02:00
+date = 2026-02-15T11:02:34+02:00
 tags = ["pwn", "Heap", "0xFUN"]
 categories = ["CTF"]
 +++
