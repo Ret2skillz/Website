@@ -5,6 +5,10 @@ tags = ["pwn", "Overflow"]
 categories = ["Hackropole"]
 +++
 
+**Challenge Name : Boring**  
+**Difficulty : ★**  
+**Number of solves : 45**
+
 This post is in my series of writeup on FCSC 2026, since it's been long since I did the competition I restarted doing the challenges recently, as well as the 2 I didn't solve during the competition.  
 Boring was a 1Star challenge and the second most solved challenge of this year.  
 You can find the files of the challenge [here](https://github.com/Ret2skillz/CTFs/blob/main/FCSC2026/Boring/).
