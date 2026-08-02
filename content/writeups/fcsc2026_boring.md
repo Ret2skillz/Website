@@ -1,9 +1,8 @@
 +++
 title = 'Fcsc2026_boring'
 date = 2026-08-02T10:24:02+02:00
-tags = ["pwn", "Shellcode"]
+tags = ["pwn", "Overflow"]
 categories = ["Hackropole"]
-draft = true
 +++
 
 This post is in my series of writeup on FCSC 2026, since it's been long since I did the competition I restarted doing the challenges recently, as well as the 2 I didn't solve during the competition.  
