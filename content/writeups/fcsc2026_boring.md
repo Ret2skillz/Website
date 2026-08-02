@@ -1,5 +1,5 @@
 +++
-title = 'FCSC 2026 ★ Boring'
+title = 'FCSC 2026 Boring'
 date = 2026-08-02T10:24:02+02:00
 tags = ["pwn", "Overflow"]
 categories = ["Hackropole"]
