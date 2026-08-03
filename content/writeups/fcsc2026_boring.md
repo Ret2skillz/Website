@@ -14,8 +14,8 @@ Boring was a 1Star challenge and the second most solved challenge of this year.
 You can find the files of the challenge [here](https://github.com/Ret2skillz/CTFs/blob/main/FCSC2026/Boring/).
 
 ## TLDR ##
-- The challenge allows us to send a "team" in cbor
-- Function print_bytefield printing back the full size entered allow us to leak
+- The challenge allows us to register a "team" of players in cbor data type
+- Function print_bytefield print back the full size entered allowing us to leak
 - Bad comparison of sizes in email of user allow for a buffer overflow
 - Simple system(/bin/sh) for the win
 
@@ -30,7 +30,7 @@ It caps the max players we can send to 10. We also need to make sure we send an 
 To get out of the loop we need to send 'y' when program asks us if our submission was correct, we can enter 'n' to stay in the loop instead.
 
 # First Vulnerability #
-The main vulnerability of this challenge lies in a bad comparison. Here is the vumnerable code (the comments are added by me).
+The main vulnerability of this challenge lies in a bad comparison. Here is the vulnerable code (the comments are added by me).
 ```C
 static int validate_email(bytestring_t *email)
 {
@@ -58,7 +58,7 @@ So we can provide a valide email of a correct size, and a too long username, it 
 
 ## Leak ##
 It should be noted that players are accumulated in the same buffer, espaced by 0x250.
-There is an extract_bytestring that does cap the length to 255
+There is an extract_bytestring that does cap the length to 255, so providing a long username won't directly cause an overflow there.
 ```C
 typedef struct {
     size_t len;
@@ -80,7 +80,7 @@ static int extract_bytestring(cbor_item_t *map, const char *key,
     return 0;
 }
 ```
-However in the print_bytestring function returning players info it just take the size without capping, hence it can print what is after buffer if we provide a player with a big name.
+However in the print_bytestring function printing back players info, it just take the size of every data we sent without capping, hence it can print what is after buffer if we provide a player with a big username.
 ```C
 static void print_bytefield(const char *label, const char *buf, size_t len)
 {
