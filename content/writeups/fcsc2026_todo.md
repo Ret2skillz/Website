@@ -1,17 +1,17 @@
 +++
-title = 'FCSC 2026 History'
-date = 2026-08-05T10:24:02+02:00
-tags = ["pwn", "Overflow"]
+title = 'FCSC 2026 Todo'
+date = 2026-08-06T10:24:02+02:00
+tags = ["pwn", "Heap", "LFI", "/proc/self/mem"]
 categories = ["Hackropole"]
 +++
 
-**Challenge Name : History**  
-**Difficulty : ★**  
-**Number of solves : 83**
+**Challenge Name : Todo**  
+**Difficulty : ★★**  
+**Number of solves : 30**
 
 This post is in my series of writeup on FCSC 2026, since it's been long since I did the competition I restarted doing the challenges recently, as well as the 2 I didn't solve during the competition.  
 History was a 1Star challenge and the most solved challenge of this year.  
-You can find the files of the challenge [here](https://github.com/Ret2skillz/CTFs/blob/main/FCSC2026/History/).
+You can find the files of the challenge [here](https://github.com/Ret2skillz/CTFs/blob/main/FCSC2026/Todo/).
 
 ## TLDR ##
 - The challenge allows us to send 32 bytes of data in a loop, in a 0x400 buffer
