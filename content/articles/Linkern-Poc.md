@@ -3,6 +3,7 @@ title = 'Linux Kernel PoC (CVE-2025-39946)'
 date = 2026-02-14T12:51:42+01:00
 tags = ["pwn", "exploit", "CVE", "PoC", "Kernel"]
 categories = ["Exploit"]
+draft: true
 +++
 
 It's been a long time since I made a post on this blog. In the fall of 2025 after completing the three stars challenges on hackropole, I took a bit of a break from doing any challenges. Now in 2026 I decided to go full tryhard mode again. Amongst my different goals are hitting 100% on the app-system (pwn) category on root-me (and maybe HacktheBox too). But more importantly I will start seriously focusing on CTFs and real life binary exploitation.
