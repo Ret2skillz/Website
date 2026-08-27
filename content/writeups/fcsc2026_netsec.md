@@ -11,7 +11,7 @@ categories = ["Hackropole"]
 
 This post is in my series of writeup on FCSC 2026, since it's been long since I did the competition I restarted doing the challenges recently, as well as the 2 I didn't solve during the competition.   
 Netsec was a 3 Star challenge but there was 4 challenges less solved than this one.  
-You can find the files of the challenge [here](https://github.com/Ret2skillz/CTFs/blob/main/FCSC2026/Netsec/) (note: the bzImage to use with **run** is bzImage.backup and the other bzImage need kernel source). 
+You can find the files of the challenge [here](https://github.com/Ret2skillz/CTFs/blob/main/FCSC2026/Netsec/)
 
 ## TLDR ##
 - The challenge is a custom kernel module for v 6.18.7
