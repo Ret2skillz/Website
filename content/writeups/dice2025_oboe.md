@@ -447,7 +447,7 @@ E has the values used by iretq
 
 ## Conclusion
 Oboe was a very nice challenge. As always in kernel chals the vulnerability is easy, but the exploitation nicely required to think about every steps needed to do what we want. In this case debugging could nicely make me go to the right step, and I learned a lot from the failed attemps and paths.  
-Also after finishing the challenge, I found it was listed on a nice [repo]() of linux challenges: it's listed as medium-high in difficulty which seems fair.  
+Also after finishing the challenge, I found it was listed on a nice [repo](https://github.com/mito753/Kernel-Exploit-Dojo) of linux challenges: it's listed as medium-high in difficulty which seems fair.  
 
 The repo is a very nice ressources if you want to use chals to train on kernel exploit. I would advise to not look at the columns after the difficulty as they "leak" the intended paths. However if you get stuck for very long on a challenge they offer nice hints without giving full solution. Could have helped in my case, tho I didn't spend more than 2 days on the chal and would have lost me opportunity to learn by mistakes and debug. But If you get stuck for days at some point I'd advise on looking at the column you need to unlock the next step (aka the bug, the primitive or the final step).  
 
